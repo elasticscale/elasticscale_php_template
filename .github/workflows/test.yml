@@ -2,8 +2,14 @@ name: Laravel Test CI
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - main
   pull_request:
-    branches: [dev, main]
+    branches:
+      - dev
+      - main
 
 env:
   APP_KEY: base64:YOYcPXIX3YPDpgT6iZ0E/0AuHGahHldNGKobas/X3TM=
