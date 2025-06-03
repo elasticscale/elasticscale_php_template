@@ -70,11 +70,10 @@ jobs:
       - name: Run migrations
         run: docker compose exec -T -u 0 php php artisan migrate --force
 
-      - name: Install Playwright browsers
-        run: docker compose exec -T -u 0 php npx playwright install
-
-      - name: Install system dependencies for Playwright
-        run: docker compose exec -T -u 0 php npx playwright install-deps
+      - name: Prepare Playwright environment
+        run: |
+          docker compose exec -T -u 0 php npx playwright install --with-deps
+          docker compose exec -T -u 0 php chmod -R 775 /var/app/storage /var/app/bootstrap/cache
 
       - name: Run Playwright tests
         run: docker compose exec -T -u 0 php npm run test
