@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-vendor-${{ hashFiles('composer.lock') }}
 
       - name: Mark /var/app as safe for Git
-        run: docker compose exec -T php git config --global --add safe.directory /var/app
+        run: docker compose exec -T -u 0 php git config --global --add safe.directory /var/app
 
       - name: Ensure vendor directory exists
         run: docker compose exec -T php mkdir -p /var/app/vendor && chmod -R 777 /var/app/vendor
