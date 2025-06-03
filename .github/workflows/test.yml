@@ -75,6 +75,9 @@ jobs:
           docker compose exec -T -u 0 php npx playwright install --with-deps
           docker compose exec -T -u 0 php chmod -R 775 /var/app/storage /var/app/bootstrap/cache
           docker compose exec -T -u 0 php chown -R www-data:www-data /var/app/storage /var/app/bootstrap/cache
+          docker compose exec -T -u 0 php mkdir -p /var/app/storage/framework/views
+          docker compose exec -T -u 0 php chmod -R 775 /var/app/storage/framework/views
+          docker compose exec -T -u 0 php chown -R www-data:www-data /var/app/storage/framework/views
 
       - name: Run Playwright tests
         run: docker compose exec -T -u 0 php npm run test
