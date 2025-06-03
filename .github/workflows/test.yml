@@ -47,7 +47,7 @@ jobs:
         run: docker compose exec -T -u 0 php git config --global --add safe.directory /var/app
 
       - name: Ensure vendor directory exists
-        run: docker compose exec -T php mkdir -p /var/app/vendor && chmod -R 777 /var/app/vendor
+        run: docker compose exec -T -u 0 php bash -c "mkdir -p /var/app/vendor && chmod -R 777 /var/app/vendor"
 
       - name: Run Composer Install
         run: docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
