@@ -1,0 +1,80 @@
+name: Laravel Test CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [dev, main]
+
+env:
+  APP_KEY: base64:YOYcPXIX3YPDpgT6iZ0E/0AuHGahHldNGKobas/X3TM=
+  VITE_PUSHER_APP_KEY: ${{ secrets.PUSHER_APP_KEY }}
+  VITE_PUSHER_APP_CLUSTER: ${{ secrets.PUSHER_APP_CLUSTER }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create .env file
+        run: cp .env.example .env
+
+      - name: Start Docker containers
+        run: docker compose up -d --build
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            docker compose exec -T mysql mysqladmin ping -h127.0.0.1 -uroot --silent && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Install PHP dependencies (cached)
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-vendor-${{ hashFiles('composer.lock') }}
+
+      - name: Run Composer Install
+        run: docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Install Node dependencies (cached)
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: Run NPM Install
+        run: docker compose exec -T php npm install
+
+      - name: Build frontend
+        run: docker compose exec -T php npm run build
+
+      - name: Generate Laravel app key
+        run: docker compose exec -T php php artisan key:generate
+
+      - name: Run migrations
+        run: docker compose exec -T php php artisan migrate --force
+
+      - name: Install Playwright browsers
+        run: docker compose exec -T php npx playwright install
+
+      - name: Run Playwright tests
+        run: docker compose exec -T php npm run test
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            storage/coverage/reports
+            storage/playwright
+            storage/logs
+          retention-days: 14
