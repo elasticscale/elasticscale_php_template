@@ -50,7 +50,7 @@ jobs:
         run: docker compose exec -T -u 0 php bash -c "mkdir -p /var/app/vendor && chmod -R 777 /var/app/vendor"
 
       - name: Run Composer Install
-        run: docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: docker compose exec -T -u 0 php composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Install Node dependencies (cached)
         uses: actions/cache@v4
@@ -59,22 +59,22 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
       - name: Run NPM Install
-        run: docker compose exec -T php npm install
+        run: docker compose exec -T -u 0 php npm install
 
       - name: Build frontend
-        run: docker compose exec -T php npm run build
+        run: docker compose exec -T -u 0 php npm run build
 
       - name: Generate Laravel app key
-        run: docker compose exec -T php php artisan key:generate
+        run: docker compose exec -T -u 0 php php artisan key:generate
 
       - name: Run migrations
-        run: docker compose exec -T php php artisan migrate --force
+        run: docker compose exec -T -u 0 php php artisan migrate --force
 
       - name: Install Playwright browsers
-        run: docker compose exec -T php npx playwright install
+        run: docker compose exec -T -u 0 php npx playwright install
 
       - name: Run Playwright tests
-        run: docker compose exec -T php npm run test
+        run: docker compose exec -T -u 0 php npm run test
 
       - name: Upload test artifacts
         if: always()
