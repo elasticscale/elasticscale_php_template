@@ -73,6 +73,9 @@ jobs:
       - name: Install Playwright browsers
         run: docker compose exec -T -u 0 php npx playwright install
 
+      - name: Install system dependencies for Playwright
+        run: docker compose exec -T -u 0 php npx playwright install-deps
+
       - name: Run Playwright tests
         run: docker compose exec -T -u 0 php npm run test
 
