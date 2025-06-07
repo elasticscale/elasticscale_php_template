@@ -1,68 +1,71 @@
 version: '3.8'
-
-volumes:
-  app-sql-data:
-  app-localstack-data:
-
 services:
-  php:
-    container_name: laravel_php
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    user: '1000:1000'
-    working_dir: /var/app
-    volumes:
-      - .:/var/app
     ports:
-      - '8000:8080'
-      - '5173:5173'
+      - "8000:80"
     environment:
-      AWS_ENDPOINT_URL: http://localstack:4566
-      AWS_DEFAULT_REGION: eu-west-1
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=db
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - AWS_ACCESS_KEY_ID=localstack
+      - AWS_SECRET_ACCESS_KEY=localstack
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ENDPOINT=http://localstack:4566
+      - SESSION_DRIVER=redis
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - REDIS_HOST=redis
+    volumes:
+      - ./laravel:/var/www/laravel
+      - log-volume:/var/www/laravel/storage/logs
     depends_on:
-      - mysql
+      - db
       - localstack
-
-  mysql:
-    container_name: laravel_mysql
-    image: mysql:8.0.40
-    ports:
-      - '3306:3306'
-    volumes:
-      - app-sql-data:/var/lib/mysql
+      - redis
+    cap_add:
+      - SYS_ADMIN
+  db:
+    image: mysql:8.0
     environment:
-      MYSQL_PASSWORD: example
-      MYSQL_ROOT_PASSWORD: example
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=laravel
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
   phpmyadmin:
-    container_name: laravel_phpmyadmin
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - '8081:80'
+    image: phpmyadmin/phpmyadmin:latest
     environment:
-      PMA_ARBITRARY: 1
-
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
   localstack:
-    container_name: laravel_localstack
-    image: localstack/localstack
-    ports:
-      - '4566:4566'
+    image: localstack/localstack:latest
     environment:
-      DEBUG: 1
-      SERVICES: s3,sqs
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+    ports:
+      - "4566:4566"
     volumes:
-      - app-localstack-data:/tmp/localstack
-      - '/var/run/docker.sock:/var/run/docker.sock'
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:4566/_localstack/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      - localstack-data:/var/lib/localstack
+  redis:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+volumes:
+  log-volume:
+  db-data:
+  localstack-data:
+  redis-data:

@@ -1,0 +1,25 @@
+{
+  "name": "Laravel Stateless Dev Environment",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/var/www/laravel",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "xdebug.php-debug",
+        "mikestead.dotenv"
+      ]
+    }
+  },
+  "postCreateCommand": "/bin/bash /var/www/setup.sh > /tmp/setup.log 2>&1",
+  "postStartCommand": "bash -c 'cd /var/www/laravel && if [ -f composer.json ] && [ ! -d vendor ]; then echo \"Running composer install...\" >> /tmp/setup.log && composer install >> /tmp/setup.log 2>&1; fi'",
+  "containerUser": "root",
+  "remoteUser": "root",
+  "features": {
+    "git": "latest",
+    "github-cli": "latest"
+  }
+}
