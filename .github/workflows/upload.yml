@@ -16,7 +16,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check for Laravel project files
+        id: check-files
+        run: |
+          if [ -f laravel/composer.json ] && [ -f laravel/artisan ]; then
+            echo "Laravel project files found, proceeding with build and push"
+            echo "PROCEED=true" >> $GITHUB_ENV
+          else
+            echo "Laravel project files (composer.json or artisan) missing in laravel/, skipping build and push"
+            echo "PROCEED=false" >> $GITHUB_ENV
+          fi
+
       - name: Determine ECR repository and role
+        if: env.PROCEED == 'true'
         id: config
         run: |
           if [ "${{ github.ref_name }}" = "dev" ]; then
@@ -29,20 +41,24 @@ jobs:
           echo "AWS_REGION=eu-west-1" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
+        if: env.PROCEED == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        if: env.PROCEED == 'true'
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Create ECR repository if missing
+        if: env.PROCEED == 'true'
         run: |
           aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }} || \
           aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }}
 
       - name: Build, tag, and push image to ECR
+        if: env.PROCEED == 'true'
         env:
           ECR_REGISTRY: 533267114484.dkr.ecr.eu-west-1.amazonaws.com
           IMAGE_TAG: ${{ github.sha }}
