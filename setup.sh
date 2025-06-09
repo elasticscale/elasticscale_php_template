@@ -75,9 +75,9 @@ mkdir -p storage/app/public storage/framework/cache storage/framework/sessions s
 chown -R www-data:www-data /var/www/laravel/storage/logs >> "$LOG_FILE" 2>&1 || { echo "Error: Failed to set permissions for storage/logs" >> "$LOG_FILE"; exit 1; }
 chmod -R 775 /var/www/laravel/storage/logs >> "$LOG_FILE" 2>&1 || { echo "Error: Failed to set chmod for storage/logs" >> "$LOG_FILE"; exit 1; }
 
-# Initialize Git repository
-echo "Initializing Git..." >> "$LOG_FILE"
-git init >> "$LOG_FILE" 2>&1 || { echo "Error: Failed to initialize Git" >> "$LOG_FILE"; exit 1; }
+# Removed: Git initialization
+# echo "Initializing Git..." >> "$LOG_FILE"
+# git init >> "$LOG_FILE" 2>&1 || { echo "Error: Failed to initialize Git" >> "$LOG_FILE"; exit 1; }
 
 # Set permissions
 echo "Setting permissions..." >> "$LOG_FILE"

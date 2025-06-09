@@ -1,0 +1,53 @@
+name: Build and Push to ECR
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine ECR repository and role
+        id: config
+        run: |
+          if [ "${{ github.ref_name }}" = "dev" ]; then
+            echo "ECR_REPOSITORY=elastic-staging-laravel" >> $GITHUB_ENV
+            echo "ROLE_ARN=arn:aws:iam::533267114484:role/elastic-staging-github" >> $GITHUB_ENV
+          else
+            echo "ECR_REPOSITORY=elastic-prod-laravel" >> $GITHUB_ENV
+            echo "ROLE_ARN=arn:aws:iam::533267114484:role/elastic-staging-github" >> $GITHUB_ENV
+          fi
+          echo "AWS_REGION=eu-west-1" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Create ECR repository if missing
+        run: |
+          aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }} || \
+          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }}
+
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY: 533267114484.dkr.ecr.eu-west-1.amazonaws.com
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
