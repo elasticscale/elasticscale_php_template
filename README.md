@@ -248,3 +248,7 @@ When deploying to AWS ECS Fargate:
 * Mount config through environment variables.
 * Ensure all state (files, sessions, logs) is externalized.
 * Provide a working `/healthcheck`.
+
+## When to use nginx
+
+This container uses Apache as it's easier to configure. When your application is under significant load it is better to use nginx as it is friendlier on the resources and scales better. 
