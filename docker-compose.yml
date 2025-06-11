@@ -1,36 +1,19 @@
-version: '3.8'
 services:
   app:
+    container_name: elasticscale_app
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./laravel
+      dockerfile: .infra/Dockerfile
     ports:
-      - "8000:80"
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_HOST=db
-      - DB_DATABASE=laravel
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
-      - AWS_ACCESS_KEY_ID=localstack
-      - AWS_SECRET_ACCESS_KEY=localstack
-      - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ENDPOINT=http://localstack:4566
-      - SESSION_DRIVER=redis
-      - CACHE_DRIVER=redis
-      - QUEUE_CONNECTION=redis
-      - REDIS_HOST=redis
+      - "80:8080"
     volumes:
-      - ./laravel:/var/www/laravel
-      - log-volume:/var/www/laravel/storage/logs
+      - ./laravel:/var/app
     depends_on:
       - db
       - localstack
       - redis
-    cap_add:
-      - SYS_ADMIN
   db:
+    container_name: elasticscale_db
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -40,6 +23,7 @@ services:
     ports:
       - "3306:3306"
   phpmyadmin:
+    container_name: elasticscale_phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
     environment:
       - PMA_HOST=db
@@ -50,6 +34,7 @@ services:
     depends_on:
       - db
   localstack:
+    container_name: elasticscale_localstack
     image: localstack/localstack:latest
     environment:
       - SERVICES=s3
@@ -59,13 +44,13 @@ services:
     volumes:
       - localstack-data:/var/lib/localstack
   redis:
+    container_name: elasticscale_redis
     image: redis:7.0
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
 volumes:
-  log-volume:
   db-data:
   localstack-data:
   redis-data:
