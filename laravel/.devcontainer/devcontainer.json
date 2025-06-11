@@ -6,11 +6,22 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "bmewburn.vscode-intelephense-client",
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "xdebug.php-debug",
-        "mikestead.dotenv"
+          "eamodio.gitlens",
+          "EditorConfig.EditorConfig",
+          "mikestead.dotenv",
+          "onecentlin.laravel-blade",
+          "GitHub.copilot",
+          "felixfbecker.php-debug",
+          "neilbrayfield.php-docblocker",
+          "mehedidracula.php-namespace-resolver",
+          "junstyle.php-cs-fixer",
+          "felixfbecker.php-intellisense",
+          "kokororin.vscode-phpcs",
+          "ikappas.composer",
+          "vscode-icons-team.vscode-icons",
+          "recca0120.vscode-phpunit",
+          "bmewburn.vscode-intelephense-client",
+          "ms-azuretools.vscode-docker"
       ]
     }
   },
