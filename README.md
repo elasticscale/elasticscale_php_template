@@ -249,6 +249,19 @@ When deploying to AWS ECS Fargate:
 * Ensure all state (files, sessions, logs) is externalized.
 * Provide a working `/healthcheck`.
 
+## Switching away from Laravel
+
+Delete everything in the laravel folder, keep:
+
+1. .dockerignore
+2. Dockerfile
+3. .infra folder
+4. .devcontainer folder
+
+Potentially you have to change the paths in the Dockerfile if for instance your public folder with the entry point to your application is not public (this should always be its own folder).
+
+Now you can just copy the PHP source files in the repository and rebuild the containers to see if everything is working.
+
 ## When to use nginx
 
 This container uses Apache as it's easier to configure. When your application is under significant load it is better to use nginx as it is friendlier on the resources and scales better. 
