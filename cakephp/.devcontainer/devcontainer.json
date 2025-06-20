@@ -1,5 +1,5 @@
 {
-  "name": "Laravel Stateless Dev Environment",
+  "name": "CakePHP Stateless Dev Environment",
   "dockerComposeFile": "../../docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/var/app",
@@ -9,7 +9,6 @@
           "eamodio.gitlens",
           "EditorConfig.EditorConfig",
           "mikestead.dotenv",
-          "onecentlin.laravel-blade",
           "GitHub.copilot",
           "felixfbecker.php-debug",
           "neilbrayfield.php-docblocker",

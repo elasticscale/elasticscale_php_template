@@ -1,6 +1,6 @@
-# Laravel Docker Setup for AWS ECS Fargate
+# CakePHP Docker Setup for AWS ECS Fargate
 
-This repository provides a complete example of running a Laravel PHP application using Docker and DevContainers, with a focus on building **stateless applications** ready for deployment on **AWS ECS Fargate**.
+This repository provides a complete example of running a CakePHP PHP application using Docker and DevContainers, with a focus on building **stateless applications** ready for deployment on **AWS ECS Fargate**.
 
 It includes:
 
@@ -40,23 +40,17 @@ Edit: `C:\Windows\System32\drivers\etc\hosts` as Administrator.
 #### Add the following line:
 
 ```plaintext
-127.0.0.1 laravel.test
+127.0.0.1 cakephp.test
 ```
 
 **Why?**
-Using `localhost` can cause strange behavior in Dockerized environments (network issues, caching problems). Using `laravel.test` avoids these problems and works better with tools like Laravel Valet and browsers.
+Using `localhost` can cause strange behavior in Dockerized environments (network issues, caching problems). Using `cakephp.test` avoids these problems and works better with browsers.
 
 ---
 
-### 3. Setup Laravel Environment
+### 3. Setup CakePHP Environment
 
-Copy the example environment file:
-
-```bash
-cp laravel/.env.example laravel/.env
-```
-
-This file configures Laravel for your local environment.
+Configure the CakePHP application.
 
 ---
 
@@ -70,7 +64,7 @@ docker compose up -d
 
 This will start:
 
-* Laravel app container
+* CakePHP app container
 * MySQL database
 * phpMyAdmin
 * LocalStack (mock AWS services)
@@ -79,7 +73,7 @@ This will start:
 
 ### 5. Install Composer Dependencies
 
-Enter the Laravel app container:
+Enter the CakePHP app container:
 
 ```bash
 docker compose exec -it app bash
@@ -107,10 +101,8 @@ This will create a **mock S3 bucket** (`localbucket`) inside LocalStack for loca
 
 ### 7. Access the Application
 
-* Laravel app: [http://laravel.test/](http://laravel.test/)
+* CakePHP app: [http://cakephp.test/](http://cakephp.test/)
 * phpMyAdmin: [http://localhost:8080/](http://localhost:8080/)
-
-Your Laravel source code is volume-mounted, so changes are reflected live in the container.
 
 ---
 
@@ -230,7 +222,7 @@ Wrap this logic in a factory or service class so your app can seamlessly switch 
 
 This project helps you:
 
-✅ Run Laravel in Docker
+✅ Run CakePHP in Docker
 
 ✅ Test with LocalStack
 
@@ -248,19 +240,6 @@ When deploying to AWS ECS Fargate:
 * Mount config through environment variables.
 * Ensure all state (files, sessions, logs) is externalized.
 * Provide a working `/healthcheck`.
-
-## Switching away from Laravel
-
-Delete everything in the laravel folder, keep:
-
-1. .dockerignore
-2. Dockerfile
-3. .infra folder
-4. .devcontainer folder
-
-Potentially you have to change the paths in the Dockerfile if for instance your public folder with the entry point to your application is not public (this should always be its own folder).
-
-Now you can just copy the PHP source files in the repository and rebuild the containers to see if everything is working.
 
 ## When to use nginx
 

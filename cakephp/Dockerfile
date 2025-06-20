@@ -6,7 +6,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 RUN install-php-extensions gd redis pdo_mysql zip intl soap pcntl bcmath calendar mysqli opcache sockets apcu yaml memcache pcov excimer
 
 # set webroot
-ENV APACHE_DOCUMENT_ROOT=/var/app/public
+ENV APACHE_DOCUMENT_ROOT=/var/app/webroot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && sed -ri 's|80|8080|g' /etc/apache2/sites-available/*.conf
 RUN sed -ri 's|80|8080|g' /etc/apache2/ports.conf && sed -ri 's|443|8081|g' /etc/apache2/ports.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
@@ -55,7 +55,7 @@ COPY . /var/app
 # www data owns this stuff below and can run apache, provided we fix the port
 RUN chown app:app /var/app && chown -R app:app /var/app
 RUN chmod -R 775 /var/app
-RUN chmod 664 /var/app/bootstrap/app.php && chmod 664 /var/app/public/index.php
+RUN chmod +x /var/app/bin/*
 
 # run it as user app and not root
 USER app

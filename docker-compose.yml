@@ -9,6 +9,7 @@ services:
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test    
+      - DATABASE_URL=mysql://root:root@db:3306/cakephp
     ports:
       - "80:8080"
     volumes:
@@ -22,7 +23,7 @@ services:
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=laravel
+      - MYSQL_DATABASE=cakephp
     volumes:
       - db-data:/var/lib/mysql
     ports:
