@@ -1,4 +1,4 @@
-FROM php:8.3.7-apache
+FROM php:7.2.34-apache
 # this is the production / staging image, not the devcontainer
 
 # install the php extensions

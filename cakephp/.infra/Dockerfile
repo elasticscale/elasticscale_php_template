@@ -1,4 +1,4 @@
-FROM php:8.3.7-apache
+FROM php:7.2.34-apache
 # this is the devcontainer image, not the production / staging image (local development)
 
 # install git for the devcontainer, not needed in production, and it runs as root
