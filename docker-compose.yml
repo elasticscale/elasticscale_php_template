@@ -2,7 +2,7 @@ services:
   app:
     container_name: elasticscale_app
     build:
-      context: ./laravel
+      context: ./cakephp
       dockerfile: .infra/Dockerfile
     environment:
       - AWS_ENDPOINT_URL=http://localstack:4566
@@ -12,7 +12,7 @@ services:
     ports:
       - "80:8080"
     volumes:
-      - ./laravel:/var/app
+      - ./cakephp:/var/app
     depends_on:
       - db
       - localstack
